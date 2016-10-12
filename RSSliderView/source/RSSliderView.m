@@ -241,14 +241,17 @@
             self.foregroundView.frame = CGRectMake(0, 0, p.x, self.frame.size.height);
             
             if (!isHandleHidden) {
+                CGFloat height = self.foregroundView.frame.size.height - borderWidth*2 - borderoffset*2;
+                CGFloat posY = borderWidth + borderoffset;
+                
                 if (self.foregroundView.frame.size.width <= 0) {
-                    self.handleView.frame = CGRectMake(0, borderWidth, handleWidth, self.foregroundView.frame.size.height-borderWidth);
+                    self.handleView.frame = CGRectMake(0, posY, handleWidth, height);
                     [self.delegate sliderValueChanged:self]; // or use sliderValueChangeEnded method
                 }else if (self.foregroundView.frame.size.width >= self.frame.size.width) {
-                    self.handleView.frame = CGRectMake(self.foregroundView.frame.size.width-handleWidth, borderWidth, handleWidth, self.foregroundView.frame.size.height-borderWidth*2);
+                    self.handleView.frame = CGRectMake(self.foregroundView.frame.size.width-handleWidth, posY, handleWidth, height);
                     [self.delegate sliderValueChanged:self]; // or use sliderValueChangeEnded method
                 }else{
-                    self.handleView.frame = CGRectMake(self.foregroundView.frame.size.width-handleWidth/2, borderWidth, handleWidth, self.foregroundView.frame.size.height-borderWidth*2);
+                    self.handleView.frame = CGRectMake(self.foregroundView.frame.size.width-handleWidth/2, posY, handleWidth, height);
                 }
             }
         }

@@ -27,6 +27,7 @@
 #define borderWidth 2.0 // size of border under the slider
 #define viewCornerRadius 5.0 // view corners radius
 #define animationSpeed 0.1 // speed when slider change position on tap
+#define borderoffset  10.0f
 
 #import <UIKit/UIKit.h>
 
