@@ -27,6 +27,42 @@
 
 @implementation RSSliderView
 
+-(instancetype)custom
+{
+    NSString *cellName = @"RSSliderView";
+    // 初始化时加载collectionCell.xib文件
+    NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:cellName owner:self options:nil];
+    
+    // 如果路径不存在，return nil
+    if (arrayOfViews.count < 1)
+    {
+        return nil;
+    }
+    // 如果xib中view不属于UICollectionViewCell类，return nil
+    if (![[arrayOfViews objectAtIndex:0] isKindOfClass:[UIView class]])
+    {
+        return nil;
+    }
+    // 加载nib
+    NSLog(@"init RSSliderView: %@", cellName);
+    return [arrayOfViews objectAtIndex:0];;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self = [self custom];
+    }
+    return self;
+}
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+}
+
 -(id)initWithFrame:(CGRect)frame andOrientation:(Orientation)orientation {
     if (self = [super initWithFrame:frame]) {
         [self setOrientation:orientation];
@@ -56,6 +92,15 @@
     self.handleView.layer.cornerRadius = viewCornerRadius;
     self.handleView.layer.masksToBounds = YES;
     
+    self.progressFrontView = [[UIView alloc]init];
+    self.progressFrontView.backgroundColor = [UIColor redColor];
+    self.progressEndView = [[UIView alloc]init];
+    self.progressEndView.backgroundColor = [UIColor grayColor];
+    
+    self.handleLabel = [[UILabel alloc]init];
+    self.handleImage = [[UIImageView alloc]init];
+    self.handelBtn = [[UIButton alloc]init];
+    
     switch (self.orientation) {
         case Vertical:
             self.label = [[UILabel alloc] init];
@@ -71,9 +116,16 @@
     
     self.label.textAlignment = NSTextAlignmentCenter;
     self.label.font = [UIFont fontWithName:@"Helvetica" size:24];
+    [self addSubview:self.progressFrontView];
+    [self addSubview:self.progressEndView];
     [self addSubview:self.foregroundView];
     [self addSubview:self.label];
     [self addSubview:self.handleView];
+    
+    [self.handleView addSubview:self.handleLabel];
+    self.handelBtn.enabled = NO;
+    [self.handleView addSubview:self.handleImage];
+    [self.handleView addSubview:self.handelBtn];
     
     self.layer.cornerRadius = viewCornerRadius;
     self.layer.masksToBounds = YES;
@@ -157,12 +209,26 @@
     [self.handleView removeFromSuperview];
 }
 
+-(void)useProcessView:(BOOL)hide
+{
+    self.progressEndView.hidden = !hide;
+    self.progressFrontView.hidden = !hide;
+    self.foregroundView.hidden = hide;
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    self.label.frame = self.bounds;
+}
+
 #pragma mark - Touch Events
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self];
     
+    NSLog(@"the moved %@", NSStringFromCGPoint(point));
     switch (self.orientation) {
         case Vertical:
             if (!(point.y < 0) && !(point.y > self.frame.size.height)) {
@@ -189,7 +255,8 @@
     UITouch *touch = [touches anyObject];
     CGPoint point = [touch locationInView:self];
     __weak __typeof(self)weakSelf = self;
-    
+   
+    NSLog(@"the move end %@", NSStringFromCGPoint(point));
     [UIView animateWithDuration:animationSpeed animations:^ {
         [weakSelf changeStarForegroundViewWithPoint:point];
     } completion:^(BOOL finished) {
@@ -239,10 +306,13 @@
             
             self.value = p.x / self.frame.size.width;
             self.foregroundView.frame = CGRectMake(0, 0, p.x, self.frame.size.height);
+           
+            self.progressFrontView.frame = CGRectMake(0, proessViewOffset, p.x, self.frame.size.height - proessViewOffset*2);
+            self.progressEndView.frame = CGRectMake(p.x, proessViewOffset, self.frame.size.width-p.x, self.frame.size.height - proessViewOffset*2);
             
             if (!isHandleHidden) {
                 CGFloat height = self.foregroundView.frame.size.height - borderWidth*2 - borderoffset*2;
-                CGFloat posY = borderWidth + borderoffset;
+                CGFloat posY = self.foregroundView.center.y - height/2;//borderWidth + borderoffset;
                 
                 if (self.foregroundView.frame.size.width <= 0) {
                     self.handleView.frame = CGRectMake(0, posY, handleWidth, height);
@@ -253,6 +323,10 @@
                 }else{
                     self.handleView.frame = CGRectMake(self.foregroundView.frame.size.width-handleWidth/2, posY, handleWidth, height);
                 }
+                
+                self.handleLabel.frame = self.handleView.bounds;
+                self.handleImage.frame = self.handleView.bounds;
+                self.handelBtn.frame = self.handleView.bounds;
             }
         }
             break;

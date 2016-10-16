@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "RSSliderView.h"
+#import "TestViewController.h"
 
 @interface ViewController () <RSliderViewDelegate>
 
@@ -18,7 +19,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    RSSliderView *horSlider = [[RSSliderView alloc] initWithFrame:CGRectMake(20, 40, 280, 70) andOrientation:Horizontal];
+    RSSliderView *horSlider = [[RSSliderView alloc] initWithFrame:CGRectMake(20, 40 + 60, 280, 70) andOrientation:Horizontal];
     horSlider.delegate = self;
     [horSlider setColorsForBackground:[UIColor colorWithRed:27.0/255.0 green:28.0/255.0 blue:37.0/255.0 alpha:1.0]
                            foreground:[UIColor colorWithRed:0.0 green:106.0/255.0 blue:95.0/255.0 alpha:1.0]
@@ -30,7 +31,9 @@
     horSlider.label.textColor = [UIColor colorWithRed:0.0 green:205.0/255.0 blue:184.0/255.0 alpha:1.0];
     [self.view addSubview:horSlider];
     
-    RSSliderView *vertSlider = [[RSSliderView alloc] initWithFrame:CGRectMake(150, 200, 80, 300) andOrientation:Vertical];
+    [horSlider useProcessView:YES];
+    
+    RSSliderView *vertSlider = [[RSSliderView alloc] initWithFrame:CGRectMake(150, 200 + 60, 80, 300) andOrientation:Vertical];
     vertSlider.delegate = self;
     [vertSlider setColorsForBackground:[UIColor colorWithRed:37.0/255.0 green:46.0/255.0 blue:38.0/255.0 alpha:1.0]
                             foreground:[UIColor colorWithRed:32.0/255.0 green:86.0/255.0 blue:0.0 alpha:1.0]
@@ -45,10 +48,30 @@
     vertSlider.label.font = [UIFont fontWithName:@"Helvetica" size:25];
     vertSlider.label.textColor = [UIColor colorWithRed:128.0/255.0 green:209.0/255.0 blue:79.0/255.0 alpha:1.0];
     [self.view addSubview:vertSlider];
+    
+//    UIButton *btn = [[UIButton alloc]initWithFrame:CGRectMake(0, 300, 300, 400)];
+//    [btn setTitle:@"next view" forState:UIControlStateNormal];
+//    [btn setBackgroundColor:[UIColor redColor]];
+//    [btn addTarget:self action:@selector(pushView) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:btn];
+}
+
+- (void)pushView
+{
+    TestViewController *vc = [[TestViewController alloc]init];
+    //[self presentViewController:vc animated:YES completion:^{
+    //}];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 -(void)sliderValueChanged:(RSSliderView *)sender {
     NSLog(@"Value Changed: %f", sender.value);
+    
+    CGFloat max = 10.0f;
+    CGFloat min = -10.0f;
+    
+    CGFloat value = (max - min)* sender.value + min;
+    sender.handleLabel.text = [NSString stringWithFormat:@"%.2f", value];
 }
 
 -(void)sliderValueChangeEnded:(RSSliderView *)sender {

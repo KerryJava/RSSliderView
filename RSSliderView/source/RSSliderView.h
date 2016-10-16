@@ -23,11 +23,12 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-#define handleWidth 14.0 // handle width
+#define handleWidth 100.0 // handle width
 #define borderWidth 2.0 // size of border under the slider
 #define viewCornerRadius 5.0 // view corners radius
 #define animationSpeed 0.1 // speed when slider change position on tap
 #define borderoffset  10.0f
+#define proessViewOffset 20.0f
 
 #import <UIKit/UIKit.h>
 
@@ -52,6 +53,11 @@ typedef enum {
 }
 
 @property (nonatomic, strong) UIView *foregroundView;
+@property (nonatomic, strong) UILabel *handleLabel;
+@property (nonatomic, strong) UIImageView *handleImage;
+@property (nonatomic, strong) UIButton *handelBtn;
+@property (nonatomic, strong) UIView *progressFrontView;
+@property (nonatomic, strong) UIView *progressEndView;
 @property (nonatomic, strong) UIView *handleView;
 @property (nonatomic, strong) UILabel *label;
 @property (nonatomic, assign, setter=setSliderValue:) float value;
@@ -65,7 +71,7 @@ typedef enum {
 -(void)setColorsForBackground:(UIColor *)bCol foreground:(UIColor *)fCol handle:(UIColor *)hCol border:(UIColor *)brdrCol;
 -(void)removeRoundCorners:(BOOL)corners removeBorder:(BOOL)border;
 -(void)hideHandle;
-
+-(void)useProcessView:(BOOL)hide;
 -(id)initWithFrame:(CGRect)frame andOrientation:(Orientation)orientation;
 
 @end
